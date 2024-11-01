@@ -5,7 +5,7 @@
 
 start(_StartType, _StartArgs) ->
     Dispatch = cowboy_router:compile([
-    {'', [
+    {'*', [
         %{"/", cowboystatic, {priv_file, db_access, "static/index.html"}},
         {"/", toppage_h, []}
         %{"/gfriends",get_friends_h,[]},
@@ -21,6 +21,6 @@ start(_StartType, _StartArgs) ->
         {keyfile, PrivDir ++ "/ssl/privkey.pem"}
     ], 
     #{env => #{dispatch => Dispatch}}),
-    silly_server_sup:start_link().
+    tracker_https_handler_sup:start_link().
 stop(_State) ->
     ok.
