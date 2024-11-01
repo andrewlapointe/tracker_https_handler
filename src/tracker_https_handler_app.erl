@@ -5,7 +5,7 @@
 
 start(_StartType, _StartArgs) ->
     Dispatch = cowboy_router:compile([
-    {'*', [
+    {<<"*">>, [
         %{"/", cowboystatic, {priv_file, db_access, "static/index.html"}},
         {"/", toppage_h, []}
         %{"/gfriends",get_friends_h,[]},
