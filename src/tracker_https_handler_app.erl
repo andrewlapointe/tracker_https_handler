@@ -1,21 +1,26 @@
 -module(tracker_https_handler_app).
 -behaviour(application).
-
 -export([start/2, stop/1]).
 
-start(_StartType, _StartArgs) ->
-    % Start the Cowboy router
-    {ok, _} = cowboy:start_https(my_https_listener, 100,
-        #{port => 8443,
-          certfile => "/path/to/cert.pem",
-          keyfile => "/path/to/key.pem"},
-        #{env => #{dispatch => cowboy_router:compile([
-              {'_', [
-                  {"/", cowboy_handler, []}
-              ]}
-          ])}}
-    ),
-    {ok, self()}.
 
+start(_StartType, _StartArgs) ->
+    Dispatch = cowboy_router:compile([
+    {'', [
+        %{"/", cowboystatic, {priv_file, db_access, "static/index.html"}},
+        {"/", toppage_h, []}
+        %{"/gfriends",get_friends_h,[]},
+        %{"/pfriends",set_friends_h,[]},
+        %{"/afriend",add_friend_h,[]}
+    ]}
+    ]),
+    PrivDir = code:priv_dir(silly_server),
+    %tls stands for transport layer security
+    {ok, _} = cowboy:start_tls(https_listener, [
+        {port, 443},
+        {certfile, PrivDir ++ "/ssl/fullchain.pem"},
+        {keyfile, PrivDir ++ "/ssl/privkey.pem"}
+    ], 
+    #{env => #{dispatch => Dispatch}}),
+    silly_server_sup:start_link().
 stop(_State) ->
     ok.
