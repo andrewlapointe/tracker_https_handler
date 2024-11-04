@@ -1,15 +1,18 @@
 {application, tracker_https_handler,
- [{description, "An OTP application"},
+ [
+  {description, "Tracker HTTPS Handler"},
   {vsn, "0.1.0"},
+  {modules, [tracker_https_handler_app, toppage_h]},
   {registered, []},
+  {applications, [
+      kernel,
+      stdlib,
+      ranch,
+      crypto,  % Needed for SSL/TLS
+      ssl,     % SSL application
+      cowboy
+  ]},
   {mod, {tracker_https_handler_app, []}},
-  {applications,
-   [kernel,
-    stdlib
-   ]},
-  {env,[]},
-  {modules, []},
-
-  {licenses, ["Apache 2.0"]},
-  {links, []}
+  {env, []},
+  {runtime_dependencies, []}
  ]}.
