@@ -18,7 +18,7 @@ start(_StartType, _StartArgs) ->
         {certfile, "/priv/fullchain.pem"},
         {keyfile, "/priv/privkey.pem"}
     ], 
-    #{env => #{dispatch => Dispatch}}).
-    % tracker_https_handler_sup:start_link().
+    #{env => #{dispatch => Dispatch}}),
+    tracker_https_handler_sup:start_link().
 stop(_State) ->
     ok.
