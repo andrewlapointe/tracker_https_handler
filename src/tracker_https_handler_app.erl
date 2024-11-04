@@ -13,12 +13,10 @@ start(_StartType, _StartArgs) ->
         %{"/afriend",add_friend_h,[]}
     ]}
     ]),
-    PrivDir = code:priv_dir(silly_server),
-    %tls stands for transport layer security
     {ok, _} = cowboy:start_tls(https_listener, [
         {port, 443},
-        {certfile, PrivDir ++ "./priv/fullchain.pem"},
-        {keyfile, PrivDir ++ "./priv/privkey.pem"}
+        {certfile, "/priv/fullchain.pem"},
+        {keyfile, "/priv/privkey.pem"}
     ], 
     #{env => #{dispatch => Dispatch}}),
     tracker_https_handler_sup:start_link().
