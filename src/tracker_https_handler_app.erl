@@ -8,7 +8,9 @@ start(_StartType, _StartArgs) ->
     {'_', [
         %{"/", cowboystatic, {priv_file, db_access, "static/index.html"}},
         {"/", toppage_h, []},
-        {"/register", registration_http_handler, []}
+        {"/register", registration_http_handler, []},
+        {"/update", package_monitor_http_handler, []},
+        {"/track/[...]", tracking_http_handler, []}
         %{"/gfriends",get_friends_h,[]},
         %{"/pfriends",set_friends_h,[]},
         %{"/afriend",add_friend_h,[]}
