@@ -1,30 +1,26 @@
-% HTTP Handler (Using Cowboy)
-% The HTTP handler will accept POST requests containing JSON data and send this data to the Registration Service.
-
-
--module(registration_http_handler).
+-module(package_monitor_http_handler).
 -export([init/2]).
 
 init(Req0, Opts) ->
     Method = cowboy_req:method(Req0),
     Path = cowboy_req:path(Req0),
 
-    %% Only handle POST requests to "/register"
+    %% Only handle POST requests to "/update"
     Response = case {Method, Path} of
-        {post, "/register"} ->
+        {post, "/update"} ->
             %% Read the JSON body
             case cowboy_req:read_body(Req0) of
                 {ok, Body, Req1} ->
                     %% Decode JSON into a map
                     case jsx:decode(Body, [return_maps]) of
                         {ok, JsonMap} ->
-                            %% Call registration_app to add the package
-                            case registration_app:register_package(JsonMap) of
-                                {ok, Msg} ->
-                                    cowboy_req:reply(201, #{<<"content-type">> => <<"application/json">>}, jsx:encode(#{message => Msg}), Req1);
-                                {error, Reason} ->
-                                    cowboy_req:reply(500, #{<<"content-type">> => <<"application/json">>}, jsx:encode(#{error => Reason}), Req1)
-                            end;
+                            %% Extract Package ID and Update Data
+                            PackageId = maps:get(package_id, JsonMap),
+                            UpdateData = maps:remove(package_id, JsonMap),
+                            %% Call package_monitor_app to update the package
+                            package_monitor_app:update_package(PackageId, UpdateData),
+                            %% Respond with 202 Accepted to indicate the update was processed
+                            cowboy_req:reply(202, #{<<"content-type">> => <<"application/json">>}, <<"Package update received">>, Req1);
                         {error, DecodeReason} ->
                             io:format("JSON decode error: ~p~n", [DecodeReason]),
                             cowboy_req:reply(400, #{<<"content-type">> => <<"application/json">>}, <<"Invalid JSON">>, Req1)
