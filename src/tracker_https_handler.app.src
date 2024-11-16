@@ -2,7 +2,7 @@
  [
   {description, "Tracker HTTPS Handler"},
   {vsn, "0.1.0"},
-  {modules, [tracker_https_handler_app, toppage_h]},
+  {modules, [tracker_https_handler_app, toppage_h, register_http_handler, package_monitor_http_handler, tracking_http_handler]},
   {registered, []},
   {applications, [
       kernel,
