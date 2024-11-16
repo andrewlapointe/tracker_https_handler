@@ -7,7 +7,7 @@ init(Req0, Opts) ->
 
     %% Only handle GET requests to "/track/:package_id"
     Response = case {Method, Path} of
-        {get, <<"/track/", PackageId/binary>>} ->
+        {get, <<"/track/", PackageId>>} ->
             %% Query the tracking_app gen_server to get the status
             case tracking_app:get_status(PackageId) of
                 {ok, Data} ->
