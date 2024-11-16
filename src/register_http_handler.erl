@@ -1,7 +1,7 @@
 % HTTP Handler (Using Cowboy)
 % The HTTP handler will accept POST requests containing JSON data and send this data to the Registration Service.
 
--module(registration_http_handler).
+-module(register_http_handler).
 -export([init/2]).
 
 init(Req0, Opts) ->
