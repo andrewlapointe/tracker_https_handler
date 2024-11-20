@@ -1,9 +1,3 @@
-## Name of the node
--name cowboy@24.199.101.193
-
-## Cookie for distributed communication
--setcookie MomsHomadeCookies
-
 ## Enable a crash dump file (optional)
 +W w
 +K true
