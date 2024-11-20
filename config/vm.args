@@ -5,3 +5,6 @@
 
 ## Enable observer or debugging tools (optional)
 -sname debug_node
+
+-name ${NODE_NAME}
+-setcookie ${COOKIE}
