@@ -2,24 +2,23 @@
 -export([init/2]).
 
 init(Req0, Opts) ->
-    Method = cowboy_req:method(Req0),
-    Path = cowboy_req:path(Req0),
-
-    %% Only handle GET requests to "/track/:package_id"
-    Response = case {Method, Path} of
-        {get, <<"/track/", PackageId/binary>>} ->
-            %% Query the tracking_app gen_server to get the status
-            case tracking_app:get_status(PackageId) of
-                {ok, Data} ->
-                    cowboy_req:reply(200, #{<<"content-type">> => <<"application/json">>}, jsx:encode(#{status => Data}), Req0);
-                {error, "Package not found"} ->
-                    cowboy_req:reply(404, #{<<"content-type">> => <<"application/json">>}, <<"Package not found">>, Req0);
+    %% Read and decode the request body
+    {ok, Data, _} = cowboy_req:read_body(Req0),
+    case jsx:decode(Data, [return_maps]) of
+        {ok, #{<<"package_id">> := PackageId}} ->
+            %% Call the tracking_app GenServer to get the status
+            case gen_server:call({tracking_server, utils:get_node_name()}, {get_status, PackageId}) of
+                {ok, Status} ->
+                    %% Respond with the tracking status as JSON
+                    Req = cowboy_req:reply(200, #{<<"content-type">> => <<"application/json">>}, jsx:encode(#{status => Status}), Req0),
+                    {ok, Req, Opts};
                 {error, Reason} ->
-                    cowboy_req:reply(500, #{<<"content-type">> => <<"application/json">>}, jsx:encode(#{error => Reason}), Req0)
+                    %% Respond with an error message
+                    Req = cowboy_req:reply(500, #{<<"content-type">> => <<"application/json">>}, jsx:encode(#{error => Reason}), Req0),
+                    {ok, Req, Opts}
             end;
         _ ->
-            %% Respond with 404 Not Found for other methods/paths
-            cowboy_req:reply(404, #{<<"content-type">> => <<"application/json">>}, <<"Not Found">>, Req0)
-    end,
-
-    {ok, Response, Opts}.
+            %% Handle invalid JSON structure
+            Req = cowboy_req:reply(400, #{<<"content-type">> => <<"application/json">>}, jsx:encode(#{error => <<"Invalid JSON or missing 'package_id'">>}), Req0),
+            {ok, Req, Opts}
+    end.
