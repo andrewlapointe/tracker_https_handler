@@ -9,7 +9,7 @@ start(_StartType, _StartArgs) ->
         %{"/", cowboystatic, {priv_file, db_access, "static/index.html"}},
         {"/", toppage_h, []},
         {"/register", registration_http_handler, []},
-        {"/update", package_monitor_http_handler, []},
+        {"/update", package_monitor_http_handler, []}
         %{"/gfriends",get_friends_h,[]},
         %{"/pfriends",set_friends_h,[]},
         %{"/afriend",add_friend_h,[]}
@@ -23,5 +23,7 @@ start(_StartType, _StartArgs) ->
     ], 
     #{env => #{dispatch => Dispatch}}),
     tracker_https_handler_sup:start_link().
+
+
 stop(_State) ->
     ok.
