@@ -22,4 +22,5 @@ init(Req0, Opts) ->
             %% Handle invalid JSON structure
             Req = cowboy_req:reply(400, #{<<"content-type">> => <<"application/json">>}, jsx:encode(#{error => <<"Invalid JSON or missing 'package_id'">>}), Req0),
             {ok, Req, Opts}
-    end.
+    end,
+    {ok, Response, Opts}.
