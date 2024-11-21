@@ -7,7 +7,14 @@ start(_StartType, _StartArgs) ->
     Dispatch = cowboy_router:compile([
     {'_', [
         %{"/", cowboystatic, {priv_file, db_access, "static/index.html"}},
+<<<<<<< Updated upstream
         {"/", toppage_h, []}
+=======
+        {"/", toppage_h, []},
+        {"/register", registration_http_handler, []},
+        {"/update", package_monitor_http_handler, []},
+        {"/track", tracking_http_handler, []}
+>>>>>>> Stashed changes
         %{"/gfriends",get_friends_h,[]},
         %{"/pfriends",set_friends_h,[]},
         %{"/afriend",add_friend_h,[]}
