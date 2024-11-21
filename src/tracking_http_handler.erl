@@ -2,7 +2,6 @@
 -export([init/2]).
 
 init(Req0, Opts) ->
-
     %% Read and decode the request body
     {ok, Data, _} = cowboy_req:read_body(Req0),
     case jsx:decode(Data, [return_maps]) of
