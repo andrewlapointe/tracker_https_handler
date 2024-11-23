@@ -10,16 +10,13 @@ start(_StartType, _StartArgs) ->
         {"/", toppage_h, []},
         {"/register", registration_http_handler, []},
         {"/update", package_monitor_http_handler, []}
-        %{"/gfriends",get_friends_h,[]},
-        %{"/pfriends",set_friends_h,[]},
-        %{"/afriend",add_friend_h,[]}
     ]}
     ]),
     {ok, _} = cowboy:start_tls(https_listener, [
         {port, 443},
-        {certfile, "/etc/letsencrypt/live/cowboy.nl-package-tracker.org/cert.pem"},
-        {keyfile, "/etc/letsencrypt/live/cowboy.nl-package-tracker.org/privkey.pem"},
-        {cacertfile, "/etc/letsencrypt/live/cowboy.nl-package-tracker.org/chain.pem"}
+        {certfile, "/etc/letsencrypt/live/cowboy.kickbackcode.com/cert.pem"},
+        {keyfile, "/etc/letsencrypt/live/cowboy.kickbackcode.com/privkey.pem"},
+        {cacertfile, "/etc/letsencrypt/live/cowboy.kickbackcode.com/chain.pem"}
     ], 
     #{env => #{dispatch => Dispatch}}),
     tracker_https_handler_sup:start_link().
