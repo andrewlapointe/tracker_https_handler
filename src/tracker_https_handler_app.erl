@@ -6,7 +6,7 @@
 start(_StartType, _StartArgs) ->
     Dispatch = cowboy_router:compile([
     {'_', [
-        %{"/", cowboystatic, {priv_file, db_access, "static/index.html"}},
+        % {"/", cowboystatic, {priv_file, db_access, "static/index.html"}},
         {"/", toppage_h, []},
         {"/register", registration_http_handler, []},
         {"/update", package_monitor_http_handler, []}
