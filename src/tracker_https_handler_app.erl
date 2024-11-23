@@ -10,8 +10,7 @@ start(_StartType, _StartArgs) ->
             {"/register", registration_http_handler, []},
             {"/update", package_monitor_http_handler, []},
             {"/", cowboy_static, {priv_dir, tracker_https_handler, "static/index.html"}},
-            {"/notifications", notification_http_handler, []},
-            {"/", toppage_h, []}
+            {"/notifications", notification_http_handler, []}
             %{"/gfriends",get_friends_h,[]},
             %{"/pfriends",set_friends_h,[]},
             %{"/afriend",add_friend_h,[]}

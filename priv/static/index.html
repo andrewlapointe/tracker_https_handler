@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Package Notifications</title>
+</head>
+<body>
+    <h1>Package Notification Log</h1>
+    <pre id="notificationLog">Loading...</pre>
+
+    <script>
+        async function fetchNotifications() {
+            try {
+                const response = await fetch('/notifications');
+                const text = await response.text();
+                document.getElementById('notificationLog').innerText = text;
+            } catch (error) {
+                document.getElementById('notificationLog').innerText = 'Failed to load notifications.';
+            }
+        }
+
+        fetchNotifications();
+    </script>
+</body>
+</html>
