@@ -1,4 +1,4 @@
--module(notification_handler).
+-module(notification_http_handler).
 -export([init/3, handle/2]).
 
 init(_, Req, State) ->
