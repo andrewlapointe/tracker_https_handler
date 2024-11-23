@@ -1,17 +1,16 @@
--module(notification_http_handler).
--export([init/2]).
+-module(notification_handler).
+-export([init/3, handle/2]).
 
-init(Req0, Opts) ->
-    %% Read the log file
-    case file:read_file("notifications.log") of
-        {ok, Body} ->
-            %% Serve the content as plain text
-            Req = cowboy_req:reply(200, #{<<"content-type">> => <<"text/plain">>}, Body, Req0),
-            {ok, Req, Opts};
-        {error, Reason} ->
-            %% Handle errors (e.g., file not found)
-            Req = cowboy_req:reply(
-                500, #{<<"content-type">> => <<"text/plain">>}, <<"Error reading log file">>, Req0
-            ),
-            {ok, Req, Opts}
+init(_, Req, State) ->
+    {cowboy_rest, Req, State}.
+
+handle(Req, State) ->
+    %% Read and decode the JSON payload
+    {ok, Body, Req2} = cowboy_req:read_body(Req),
+    case jsx:decode(Body) of
+        {ok, #{<<"package_id">> := PackageId, <<"status">> := Status}} ->
+            io:format("Received notification: PackageId=~p, Status=~p~n", [PackageId, Status]),
+            {ok, Req2, State};
+        _ ->
+            {error, Req2, State}
     end.
