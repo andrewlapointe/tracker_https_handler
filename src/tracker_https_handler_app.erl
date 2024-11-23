@@ -17,9 +17,9 @@ start(_StartType, _StartArgs) ->
     ]),
     {ok, _} = cowboy:start_tls(https_listener, [
         {port, 443},
-        {certfile, "/etc/letsencrypt/live/cowboy.nl-package-tracker.org/cert.pem"},
-        {keyfile, "/etc/letsencrypt/live/cowboy.nl-package-tracker.org/privkey.pem"},
-        {cacertfile, "/etc/letsencrypt/live/cowboy.nl-package-tracker.org/chain.pem"}
+        {certfile, "/etc/letsencrypt/live/cowboy.brickdrop.online/cert.pem"},
+        {keyfile, "/etc/letsencrypt/live/cowboy.brickdrop.online/privkey.pem"},
+        {cacertfile, "/etc/letsencrypt/live/cowboy.brickdrop.online/chain.pem"}
     ], 
     #{env => #{dispatch => Dispatch}}),
     tracker_https_handler_sup:start_link().
