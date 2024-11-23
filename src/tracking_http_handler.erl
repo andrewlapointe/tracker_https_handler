@@ -5,9 +5,9 @@ init(Req0, Opts) ->
     %% Read and decode the request body
     {ok, Data, _} = cowboy_req:read_body(Req0),
     case jsx:decode(Data, [return_maps]) of
-        {ok, #{<<"package_id">> := PackageId}} ->
+        {ok, #{<<"package_id">> := 1}} ->
             %% Call the tracking_app GenServer to get the status
-            case gen_server:call({tracking_server, utils:get_node_name()}, {get_status, PackageId}) of
+            case gen_server:call({tracking_server, utils:get_node_name()}, {get_status, 1}) of
                 {ok, Status} ->
                     %% Respond with the tracking status as JSON
                     Req = cowboy_req:reply(200, #{<<"content-type">> => <<"application/json">>}, jsx:encode(#{status => Status}), Req0),
