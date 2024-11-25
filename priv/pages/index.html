@@ -3,13 +3,25 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
+    <title>Package Tracking Application</title>
+    <link rel="stylesheet" href="../css/index.css">
 </head>
 
 <body>
-    <h1>Home Page</h1>
-    <p>Hello World</p>
+    <header>
+        <h1>Package Tracker</h1>
+    </header>
+    <main>
+        <p>Welcome to the Package Tracker. Enter your tracking number below to track your package.</p>
+        <form action="/track" method="get">
+            <label for="tracking-number">Tracking Number:</label>
+            <input type="text" id="tracking-number" name="tracking-number" required>
+            <button type="submit">Track Package</button>
+        </form>
+    </main>
+    <footer>
+        <p>&copy; 2023 Package Tracker Inc.</p>
+    </footer>
 </body>
 
 </html>
