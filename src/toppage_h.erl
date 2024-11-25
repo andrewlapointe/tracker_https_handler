@@ -4,12 +4,16 @@
 % -define(MAIN_LOGIC_PID, main_logic).
 
 init(Req0, Opts) ->
-    % Req = cowboy_req:reply(200, #{<<"content-type">> => <<"text/plain">>}, "[\"Hello world!\"]", Req0),
-    % {ok, Req, Opts}.
-
-
-    
-    {ok, Data} = file:read_file("priv/pages/index.html"),
-    Req1 = cowboy_req:set_resp_header(<<"content-type">>, <<"text/html">>, Req0),
-    {ok, Req2} = cowboy_req:reply(200, #{}, Data, Req1),
-    {ok, Req2, Opts}.
+    FilePath = filename:join([code:priv_dir(tracker_https_handler), "pages", "index.html"]),
+    case file:read_file(FilePath) of
+        {ok, Data} ->
+            Headers = #{<<"content-type">> => <<"text/html">>},
+            Req1 = cowboy_req:reply(200, Headers, Data, Req0),
+            {ok, Req1, Opts};
+        {error, Reason} ->
+            error_logger:error_msg("Failed to read file: ~p~n", [Reason]),
+            ErrorBody = <<"Internal Server Error">>,
+            ErrorHeaders = #{<<"content-type">> => <<"text/plain">>},
+            Req1 = cowboy_req:reply(500, ErrorHeaders, ErrorBody, Req0),
+            {ok, Req1, Opts}
+    end.
