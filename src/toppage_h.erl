@@ -9,7 +9,7 @@ init(Req0, Opts) ->
 
 
     
-    {ok, Data} = file:read_file("/priv/pages/index.html"),
+    {ok, Data} = file:read_file("priv/pages/index.html"),
     Req1 = cowboy_req:set_resp_header(<<"content-type">>, <<"text/html">>, Req0),
     {ok, Req2} = cowboy_req:reply(200, #{}, Data, Req1),
     {ok, Req2, Opts}.
