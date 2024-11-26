@@ -82,6 +82,15 @@
     <footer>
         <p>&copy; 2023 Package Tracker Inc.</p>
     </footer>
+    <script>
+        fetch('/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ user_data: data })
+        })
+    </script>
 </body>
 
 </html>
