@@ -6,7 +6,8 @@
 start(_StartType, _StartArgs) ->
     Dispatch = cowboy_router:compile([
     {'_', [
-        {"/", toppage_h, []}
+        {"/", toppage_h, []},
+        {"/status", register_form, []}
     ]}
     ]),
     {ok, _} = cowboy:start_tls(https_listener, [
