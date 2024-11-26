@@ -5,8 +5,8 @@
 
 init(Req0, State) ->
     Method = cowboy_req:method(Req0),
-    io:format("Received ~s request~n", [Method]),
     io:format(Req0),
+    io:format("Received ~s request~n", [Method]),
     case Method of
         <<"POST">> ->
             %% Read and parse the URL-encoded form data
