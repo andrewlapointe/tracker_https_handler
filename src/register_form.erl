@@ -1,23 +1,24 @@
 -module(register_form).
 -export([init/2]).
+% -include_lib("cowboy/include/cowboy.hrl").
 
 
 init(Req0, State) ->
     Method = cowboy_req:method(Req0),
+    io:format("Received ~s request~n", [Method]),
     case Method of
         <<"POST">> ->
             %% Read and parse the URL-encoded form data
-            {Fields, Req1} = cowboy_req:read_urlencoded_body(Req0),
-            %% Extract 'user_data' from the form fields
-            UserData = maps:get(<<"user_data">>, Fields, <<"">>),
-            %% Process the data (e.g., log it)
-            io:format("Received data: ~s~n", [UserData]),
-            %% Prepare the response
+            {ok, Fields, Req1} = cowboy_req:body_qs(Req0),
+            %% Extract 'tracking-number' from the form fields
+            TrackingNumber = proplists:get_value(<<"tracking-number">>, Fields, <<"">>),
+            %% Process the data
+            io:format("Received tracking number: ~s~n", [TrackingNumber]),
+            %% Send a response back to the client
             ResponseBody = io_lib:format(
-                "<html><body><h1>Thank you, you submitted: ~s</h1></body></html>",
-                [UserData]
+                "<html><body><h1>Tracking Number Received: ~s</h1></body></html>",
+                [TrackingNumber]
             ),
-            %% Send the response
             Req2 = cowboy_req:reply(
                 200,
                 #{<<"content-type">> => <<"text/html">>},
@@ -26,7 +27,7 @@ init(Req0, State) ->
             ),
             {ok, Req2, State};
         _ ->
-            %% Handle other methods
+            %% For methods other than POST
             Req1 = cowboy_req:reply(
                 405,
                 #{<<"content-type">> => <<"text/plain">>},
