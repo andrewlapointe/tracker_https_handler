@@ -7,9 +7,11 @@ init(Req0, State) ->
     io:format("Received ~s request~n", [Method]),
     case Method of
         <<"POST">> ->
-            %% Read and parse the URL-encoded form data
-            case cowboy_req:body_qs(Req0) of
-                {ok, Fields, Req1} ->
+            %% Read the request body
+            case cowboy_req:read_body(Req0) of
+                {ok, Body, Req1} ->
+                    %% Parse the URL-encoded form data
+                    Fields = cowboy_req:parse_urlencoded(Body),
                     %% Extract 'tracking-number' from the form fields
                     TrackingNumber = proplists:get_value(<<"tracking-number">>, Fields, <<"">>),
                     io:format("Received tracking number: ~s~n", [TrackingNumber]),
@@ -27,8 +29,18 @@ init(Req0, State) ->
                         Req1
                     ),
                     {ok, Req2, State};
+                {more, _, _} ->
+                    %% Handle cases where the body is too large or needs to be read in chunks
+                    %% For simplicity, we assume the body fits in one read
+                    Req1 = cowboy_req:reply(
+                        413,
+                        #{<<"content-type">> => <<"text/plain">>},
+                        <<"Payload Too Large">>,
+                        Req0
+                    ),
+                    {ok, Req1, State};
                 {error, Reason} ->
-                    io:format("Error parsing form data: ~p~n", [Reason]),
+                    io:format("Error reading body: ~p~n", [Reason]),
                     Req1 = cowboy_req:reply(
                         400,
                         #{<<"content-type">> => <<"text/plain">>},
