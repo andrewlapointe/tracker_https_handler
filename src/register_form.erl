@@ -1,5 +1,5 @@
 -module(register_form).
--compile({parse_transform, lager_transform}).
+% -compile({parse_transform, lager_transform}).
 -include_lib("cowboy/include/cowboy.hrl").
 -include_lib("cowlib/include/cow_qs.hrl").
 -export([init/2]).
