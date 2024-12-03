@@ -3,6 +3,14 @@
 -export([start/2, stop/1]).
 
 start(_StartType, _StartArgs) ->
+
+    %% Ensure all dependencies are started
+    ok = application:ensure_all_started(ranch),
+    ok = application:ensure_all_started(cowlib),
+    ok = application:ensure_all_started(cowboy),
+    %% Start your supervisor
+    tracker_https_handler_sup:start_link(),
+
     % Get the paths for the symbolic links
     CertFile = "priv/https/cert.pem", 
     KeyFile = "priv/https/privkey.pem", 
