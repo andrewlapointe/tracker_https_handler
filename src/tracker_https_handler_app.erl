@@ -3,6 +3,7 @@
 -export([start/2, stop/1]).
 
 start(_StartType, _StartArgs) ->
+    % Get the paths for the symbolic links
     CertFile = "priv/https/cert.pem", 
     KeyFile = "priv/https/privkey.pem", 
     CACertFile = "priv/https/chain.pem",
