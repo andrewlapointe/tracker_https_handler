@@ -17,7 +17,7 @@ init(Req0, State) ->
                     % io:format("Received tracking number: ~s~n", [TrackingNumber]),
                     % %% Send a response back to the client
                     % QueryString = cowboy_req:qs(Req1),
-                    ParsedQs = binary_to_list(cowboy_req:qs(Req1)),
+                    ParsedQs = cowboy_req:qs(Req1),
                     % AtomsQs = [{binary_to_existing_atom(K, latin1), V}
                     %     || {K, V} <- ParsedQs],
                     Headers = #{<<"content-type">> => <<"text/html">>},
