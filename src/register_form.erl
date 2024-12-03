@@ -6,10 +6,10 @@ init(Req0, State) ->
     io:format("Received ~s request~n", [Method]),
     case Method of
         <<"POST">> ->
-            
+
             %% Read the request body
             case cowboy_req:read_body(Req0) of
-                {ok, Body, Req1} ->
+                {ok, _Body, Req1} ->
                     % %% Parse the URL-encoded form data using http_uri:parse_query/1
                     % Fields = http_uri:parse_query(binary_to_list(Body)),
                     % %% Extract 'tracking-number' from the form fields
@@ -17,7 +17,7 @@ init(Req0, State) ->
                     % io:format("Received tracking number: ~s~n", [TrackingNumber]),
                     % %% Send a response back to the client
                     % QueryString = cowboy_req:qs(Req1),
-                    ParsedQs = cowboy_req:parse_qs(Req1),
+                    ParsedQs = binary_to_list(cowboy_req:qs(Req1)),
                     % AtomsQs = [{binary_to_existing_atom(K, latin1), V}
                     %     || {K, V} <- ParsedQs],
                     Headers = #{<<"content-type">> => <<"text/html">>},
