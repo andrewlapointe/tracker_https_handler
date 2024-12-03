@@ -44,7 +44,9 @@ init(Req0, State) ->
                         <<"Bad Request">>,
                         Req0
                     ),
-                    {ok, Req1, State}
+                    {ok, Req1, State};
+                _ ->
+                    other
             end;
         _ ->
             %% For methods other than POST
