@@ -17,10 +17,10 @@ init(Req0, State) ->
                     % %% Send a response back to the client
                     % QueryString = cowboy_req:qs(Req1),
                     ParsedQs = cowboy_req:parse_qs(Req1),
-                    AtomsQs = [{binary_to_existing_atom(K, latin1), V}
-                        || {K, V} <- ParsedQs],
+                    % AtomsQs = [{binary_to_existing_atom(K, latin1), V}
+                    %     || {K, V} <- ParsedQs],
                     Headers = #{<<"content-type">> => <<"text/html">>},
-                    ResponseBody = io_lib:format("<html><body><h1>Tracking Number Received: ~p</h1></body></html>", [AtomsQs]),
+                    ResponseBody = io_lib:format("<html><body><h1>Tracking Number Received: ~p</h1></body></html>", [ParsedQs]),
                     Req2 = cowboy_req:reply(
                         200,
                         Headers,
