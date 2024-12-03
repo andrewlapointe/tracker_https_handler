@@ -1,6 +1,4 @@
 -module(register_form).
-% -include_lib("cowboy/include/cowboy.hrl").
-% -include_lib("cowlib/include/cow_qs.hrl").
 -export([init/2]).
 
 init(Req0, State) ->
@@ -12,10 +10,10 @@ init(Req0, State) ->
             %% Read the request body
             case cowboy_req:read_body(Req0) of
                 {ok, Body, Req1} ->
-                    %% Parse the URL-encoded form data using cow_qs:parse/1
-                    Fields = cow_qs:parse(Body),
+                    %% Parse the URL-encoded form data using uri_string:parse_query/1
+                    Fields = uri_string:parse_query(Body),
                     %% Extract 'tracking-number' from the form fields
-                    TrackingNumber = proplists:get_value(<<"tracking-number">>, Fields, <<"">>),
+                    TrackingNumber = proplists:get_value("tracking-number", Fields, ""),
                     io:format("Received tracking number: ~s~n", [TrackingNumber]),
                     %% Send a response back to the client
                     ResponseBody = iolist_to_binary(
