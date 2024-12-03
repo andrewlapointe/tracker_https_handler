@@ -9,23 +9,24 @@ init(Req0, State) ->
             %% Read the request body
             case cowboy_req:read_body(Req0) of
                 {ok, Body, Req1} ->
-                    %% Parse the URL-encoded form data using http_uri:parse_query/1
-                    Fields = http_uri:parse_query(binary_to_list(Body)),
-                    %% Extract 'tracking-number' from the form fields
-                    TrackingNumber = proplists:get_value("tracking-number", Fields, ""),
-                    io:format("Received tracking number: ~s~n", [TrackingNumber]),
-                    %% Send a response back to the client
-                    ResponseBody = io_lib:format(
-                        "<html><body><h1>Tracking Number Received: ~s</h1></body></html>",
-                        [TrackingNumber]
-                    ),
-                    Req2 = cowboy_req:reply(
-                        200,
-                        [{<<"content-type">>, <<"text/html">>}],
-                        ResponseBody,
-                        Req1
-                    ),
-                    {ok, Req2, State};
+                    % %% Parse the URL-encoded form data using http_uri:parse_query/1
+                    % Fields = http_uri:parse_query(binary_to_list(Body)),
+                    % %% Extract 'tracking-number' from the form fields
+                    % TrackingNumber = proplists:get_value("tracking-number", Fields, ""),
+                    % io:format("Received tracking number: ~s~n", [TrackingNumber]),
+                    % %% Send a response back to the client
+                    % ResponseBody = io_lib:format(
+                    %     "<html><body><h1>Tracking Number Received: ~s</h1></body></html>",
+                    %     [TrackingNumber]
+                    % ),
+                    % Req2 = cowboy_req:reply(
+                    %     200,
+                    %     [{<<"content-type">>, <<"text/html">>}],
+                    %     ResponseBody,
+                    %     Req1
+                    % ),
+                    % {ok, Req2, State};
+                    ok;
                 {more, _, _} ->
                     %% Handle cases where the body is too large or needs to be read in chunks
                     Req1 = cowboy_req:reply(
