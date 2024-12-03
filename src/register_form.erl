@@ -21,7 +21,7 @@ init(Req0, State) ->
                         || {K, V} <- ParsedQs],
                     io:format(AtomsQs),
                     Headers = #{<<"content-type">> => <<"text/html">>},
-                    ResponseBody = "<html><body><h1>Tracking Number Received: Test Val</h1></body></html>",
+                    ResponseBody = io_lib:format("<html><body><h1>Tracking Number Received: ~p</h1></body></html>", ["Format Test"]),
                     Req2 = cowboy_req:reply(
                         200,
                         Headers,
