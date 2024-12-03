@@ -8,7 +8,7 @@ init(Req0, State) ->
         <<"POST">> ->
             %% Read the request body
             case cowboy_req:read_body(Req0) of
-                {ok, Body, Req1} ->
+                {ok, _Body, _Req1} ->
                     % %% Parse the URL-encoded form data using http_uri:parse_query/1
                     % Fields = http_uri:parse_query(binary_to_list(Body)),
                     % %% Extract 'tracking-number' from the form fields
