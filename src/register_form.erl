@@ -15,10 +15,11 @@ init(Req0, State) ->
                     % TrackingNumber = proplists:get_value("tracking-number", Fields, ""),
                     % io:format("Received tracking number: ~s~n", [TrackingNumber]),
                     % %% Send a response back to the client
+                    Headers = #{<<"content-type">> => <<"text/html">>},
                     ResponseBody = "<html><body><h1>Tracking Number Received: Test Val</h1></body></html>",
                     Req2 = cowboy_req:reply(
                         200,
-                        [{<<"content-type">>, <<"text/html">>}],
+                        Headers,
                         ResponseBody,
                         Req1
                     ),
