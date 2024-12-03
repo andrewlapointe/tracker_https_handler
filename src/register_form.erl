@@ -26,7 +26,7 @@ init(Req0, State) ->
                             {ok, Resp} = cowboy_req:reply(400, #{<<"content-type">> => <<"application/json">>},
                                                         <<"Invalid JSON payload">>, Req1),
                             {halt, Resp, State};
-                        #{<<"tracking-number">> := <<1>>} ->
+                        _ ->
                             %% Query package information
                             Headers = #{<<"content-type">> => <<"text/html">>},
                             ResponseBody = io_lib:format("<html><body><h1>Tracking Number Received: ~p</h1></body></html>", ["Test JSX"]),
