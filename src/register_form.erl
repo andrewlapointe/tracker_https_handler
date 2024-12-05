@@ -15,12 +15,10 @@ init(Req0, State) ->
                 {ok, TrackingNumber} ->
                     io:format("Extracted tracking number: ~p~n", [TrackingNumber]),
                     
-                    % Send the tracking number to business logic
-                    % tracker_business_logic:handle_tracking_request(TrackingNumber),
-
-                    % Respond with success
+                    % Respond with success, displaying the tracking number
                     Headers = #{<<"content-type">> => <<"text/plain">>},
-                    Req2 = cowboy_req:reply(200, Headers, <<"Tracking request received">>, Req1),
+                    ResponseBody = <<"Tracking request received. Tracking number: ">> ++ TrackingNumber,
+                    Req2 = cowboy_req:reply(200, Headers, ResponseBody, Req1),
                     {ok, Req2, State};
 
                 {error, Reason} ->
