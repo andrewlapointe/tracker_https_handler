@@ -7,9 +7,9 @@ start(_StartType, _StartArgs) ->
     %% Start your supervisor
     tracker_https_handler_sup:start_link(),
     %% Ensure all dependencies are started
-    ok = application:ensure_all_started(ranch),
-    ok = application:ensure_all_started(cowlib),
-    ok = application:ensure_all_started(cowboy),
+    {ok, []} = application:ensure_all_started(ranch),
+    {ok, []} = application:ensure_all_started(cowlib),
+    {ok, []} = application:ensure_all_started(cowboy),
 
     % Get the paths for the symbolic links
     CertFile = "priv/https/cert.pem", 
