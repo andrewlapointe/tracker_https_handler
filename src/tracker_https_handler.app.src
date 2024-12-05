@@ -7,11 +7,11 @@
   {applications, [
       kernel,
       stdlib,
-      ranch,
+      cowboy,
+      rance,
       cowlib,
       crypto,  % Needed for SSL/TLS
-      ssl,     % SSL application
-      cowboy
+      ssl     % SSL application
   ]},
   {mod, {tracker_https_handler_app, []}},
   {env, []},
