@@ -28,9 +28,7 @@ start(_StartType, _StartArgs) ->
         {keyfile, KeyFile},
         {cacertfile, CACertFile}
     ], 
-    #{env => #{dispatch => Dispatch}}),
-
-    tracker_https_handler_sup:start_link().
+    #{env => #{dispatch => Dispatch}}).
 
 stop(_State) ->
     ok.
