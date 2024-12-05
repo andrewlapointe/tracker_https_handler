@@ -8,7 +8,7 @@
       kernel,
       stdlib,
       cowboy,
-      rance,
+      ranch,
       cowlib,
       crypto,  % Needed for SSL/TLS
       ssl     % SSL application
