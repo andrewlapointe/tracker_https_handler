@@ -17,7 +17,7 @@ init(Req0, State) ->
                     
                     % Respond with success, displaying the tracking number
                     Headers = #{<<"content-type">> => <<"text/plain">>},
-                    ResponseBody = <<"Tracking request received. Tracking number: ">> ++ TrackingNumber,
+                    ResponseBody = <<"Tracking request received.">>,
                     Req2 = cowboy_req:reply(200, Headers, ResponseBody, Req1),
                     {ok, Req2, State};
 
