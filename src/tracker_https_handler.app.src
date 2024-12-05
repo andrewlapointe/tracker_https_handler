@@ -7,9 +7,9 @@
   {applications, [
       kernel,
       stdlib,
-      cowboy,
       ranch,
       cowlib,
+      cowboy,
       crypto,  % Needed for SSL/TLS
       ssl     % SSL application
   ]},
