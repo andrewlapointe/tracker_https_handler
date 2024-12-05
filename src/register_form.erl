@@ -46,8 +46,8 @@ init(Req0, State) ->
 -spec extract_tracking_number(binary()) -> {ok, binary()} | {error, atom()}.
 extract_tracking_number(BinaryBody) ->
     %% Implement your binary parsing logic here.
-    %% Example: Assume tracking number is prefixed with <<"TRACK:">>.
-    Prefix = <<"TRACK:">>,
+    %% Example: Assume tracking number is prefixed with <<"=">>.
+    Prefix = <<"=">>,
     case binary:split(BinaryBody, Prefix, [global]) of
         [_, TrackingNumber | _] ->
             {ok, TrackingNumber};
