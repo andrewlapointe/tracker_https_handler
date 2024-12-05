@@ -18,3 +18,5 @@ _checkouts/
 
 /config/
 start_rebar3.sh
+
+priv/https
