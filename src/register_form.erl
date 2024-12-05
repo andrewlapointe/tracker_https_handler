@@ -6,18 +6,51 @@ init(Req0, State) ->
     io:format("Received ~s request~n", [Method]),
     case Method of
         <<"POST">> ->
-           {ok, Data, _Body} = cowboy_req:read_body(Req0),
-            Headers = #{<<"content-type">> => <<"text/binary">>},
-            Req1 = cowboy_req:reply(200, Headers, Data, Req0),
-            {ok, Req1, State};
+            % Read the binary body
+            {ok, Body, Req1} = cowboy_req:read_body(Req0),
+            io:format("Received binary body: ~p~n", [Body]),
+
+            % Extract the tracking number
+            case extract_tracking_number(Body) of
+                {ok, TrackingNumber} ->
+                    io:format("Extracted tracking number: ~p~n", [TrackingNumber]),
+                    
+                    % Send the tracking number to business logic
+                    % tracker_business_logic:handle_tracking_request(TrackingNumber),
+
+                    % Respond with success
+                    Headers = #{<<"content-type">> => <<"text/plain">>},
+                    Req2 = cowboy_req:reply(200, Headers, <<"Tracking request received">>, Req1),
+                    {ok, Req2, State};
+
+                {error, Reason} ->
+                    io:format("Error extracting tracking number: ~p~n", [Reason]),
+                    
+                    % Respond with error
+                    Headers = #{<<"content-type">> => <<"text/plain">>},
+                    Req2 = cowboy_req:reply(400, Headers, <<"Invalid Tracking Data">>, Req1),
+                    {ok, Req2, State}
+            end;
 
         _ ->
-            %% For methods other than POST
+            % For methods other than POST
             Req1 = cowboy_req:reply(
                 405,
-                [{<<"content-type">>, <<"text/plain">>}],
+                #{<<"content-type">> => <<"text/plain">>},
                 <<"Method Not Allowed">>,
                 Req0
             ),
             {ok, Req1, State}
+    end.
+
+-spec extract_tracking_number(binary()) -> {ok, binary()} | {error, atom()}.
+extract_tracking_number(BinaryBody) ->
+    %% Implement your binary parsing logic here.
+    %% Example: Assume tracking number is prefixed with <<"TRACK:">>.
+    Prefix = <<"TRACK:">>,
+    case binary:split(BinaryBody, Prefix, [global]) of
+        [_, TrackingNumber | _] ->
+            {ok, TrackingNumber};
+        _ ->
+            {error, not_found}
     end.
