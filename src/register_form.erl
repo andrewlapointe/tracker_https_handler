@@ -6,7 +6,7 @@ init(Req0, State) ->
     io:format("Received ~s request~n", [Method]),
     case Method of
         <<"POST">> ->
-           {ok, Data} = cowboy_req:read_body(Req0),
+           {ok, Data, _Body} = cowboy_req:read_body(Req0),
             Headers = #{<<"content-type">> => <<"text/binary">>},
             Req1 = cowboy_req:reply(200, Headers, Data, Req0),
             {ok, Req1, State};
