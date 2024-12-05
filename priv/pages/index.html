@@ -72,8 +72,8 @@
         <h1>Package Tracker</h1>
     </header>
     <main>
-        <p>Welcome to the Package Tracker. Enter your tracking number below to track your package.</p>
-        <form action="/track" method="post">
+        <p>Welcome to the Package Tracker. Enter your tracking number below to get the status of your package.</p>
+        <form action="/status" method="post">
             <label for="tracking-number">Tracking Number:</label>
             <input type="text" id="tracking-number" name="tracking-number" required>
             <button type="submit">Track Package</button>
@@ -82,6 +82,15 @@
     <footer>
         <p>&copy; 2023 Package Tracker Inc.</p>
     </footer>
+    <!-- <script>
+        fetch('/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ user_data: data })
+        })
+    </script> -->
 </body>
 
 </html>

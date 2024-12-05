@@ -9,9 +9,10 @@ start(_StartType, _StartArgs) ->
     CACertFile = "priv/https/chain.pem",
 
     Dispatch = cowboy_router:compile([
-        {'_', [
-            {"/", toppage_h, []}
-        ]}
+    {'_', [
+        {"/", toppage_h, []},
+        {"/status", register_form, []}
+    ]}
     ]),
     
     {ok, _} = cowboy:start_tls(https_listener, [
