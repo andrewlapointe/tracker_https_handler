@@ -19,7 +19,8 @@ start(_StartType, _StartArgs) ->
     Dispatch = cowboy_router:compile([
     {'_', [
         {"/", toppage_h, []},
-        {"/status", register_form, []}
+        {"/status", tracking_form, []},
+        {"/register", register_form}
     ]}
     ]),
     
