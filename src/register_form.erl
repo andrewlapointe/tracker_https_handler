@@ -1,4 +1,4 @@
--module(tracking_form).
+-module(register_form).
 -export([init/2]).
 
 init(Req0, State) ->
@@ -7,8 +7,11 @@ init(Req0, State) ->
     case Method of
         <<"POST">> ->
             {ok, Data, _Body} = cowboy_req:read_body(Req0),
-            Headers = #{<<"content-type">> => <<"text/binary">>},
-            Req1 = cowboy_req:reply(200, Headers, Data, Req0),
+            %% Log the received data for debugging
+            io:format("Received data: ~p~n", [Data]),
+            Headers = #{<<"content-type">> => <<"text/plain">>},
+            ReplyBody = <<"Package registered successfully!">>,
+            Req1 = cowboy_req:reply(200, Headers, ReplyBody, Req0),
             {ok, Req1, State};
         _ ->
             %% For methods other than POST
