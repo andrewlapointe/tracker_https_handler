@@ -17,7 +17,7 @@ init(Req0, State) ->
 
                     %% Make a direct call to the remote gen_server
                     RemoteName = {tracking_server, 'logic@198.199.88.218'},
-                    case gen_server:call(RemoteName, {get_status, integer_to_binary(TrackingNumber)}) of
+                    case gen_server:call(RemoteName, {get_status, TrackingNumber}) of
                         {ok, Status} ->
                             %% Respond with success, displaying the package status
                             Headers = #{<<"content-type">> => <<"text/plain">>},
