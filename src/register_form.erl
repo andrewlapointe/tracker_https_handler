@@ -16,7 +16,7 @@ init(Req0, State) ->
                     io:format("Extracted tracking number: ~p~n", [TrackingNumber]),
 
                     %% Make a direct call to the remote gen_server
-                    RemoteName = {tracking_server, 'logic@198.199.88.218'},
+                    RemoteName = {tracking_server, 'logic@143.198.146.54'},
                     case gen_server:call(RemoteName, {get_status, TrackingNumber}) of
                         {ok, Status} ->
                             %% Respond with success, displaying the package status
