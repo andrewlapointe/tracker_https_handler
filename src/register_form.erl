@@ -21,8 +21,9 @@ init(Req0, State) ->
                         {error, Reason} ->
                             %% Handle registration errors
                             io:format("Failed to register package: ~p~n", [Reason]),
-                            Headers = #{<<"content-type">> => <<"text/plain">>},
-                            ReplyBody = <<"Failed to register package. Reason: ">> ++ atom_to_binary(Reason, utf8),
+                            Headers = #{<<"content-type">> => <<"text/binary">>},
+                            ReasonBinary = atom_to_binary(Reason, utf8),
+                            ReplyBody = << "Failed to register package. Reason: ", ReasonBinary/binary >>,
                             Req1 = cowboy_req:reply(500, Headers, ReplyBody, Req0),
                             {ok, Req1, State}
                     end;
