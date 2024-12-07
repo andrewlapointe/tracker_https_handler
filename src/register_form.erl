@@ -5,7 +5,7 @@ init(Req0, State) ->
     Method = cowboy_req:method(Req0),
     io:format("Received ~s request~n", [Method]),
     case Method of
-        <<"POST">> ->
+        <<"REGISTER">> ->
             {ok, Data, _Body} = cowboy_req:read_body(Req0),
             %% Log the received data for debugging
             io:format("Received data: ~p~n", [Data]),
