@@ -9,7 +9,7 @@ init(Req0, State) ->
             {ok, Data, _Body} = cowboy_req:read_body(Req0),
             %% Log the received data for debugging
             io:format("Received data: ~p~n", [Data]),
-            Headers = #{<<"content-type">> => <<"text/plain">>},
+            Headers = #{<<"content-type">> => <<"text/binary">>},
             ReplyBody = <<"Package registered successfully!">>,
             Req1 = cowboy_req:reply(200, Headers, ReplyBody, Req0),
             {ok, Req1, State};
