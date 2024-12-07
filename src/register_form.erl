@@ -14,12 +14,22 @@ init(Req0, State) ->
             case extract_tracking_number(Body) of
                 {ok, TrackingNumber} ->
                     io:format("Extracted tracking number: ~p~n", [TrackingNumber]),
-                    
-                    % Respond with success, displaying the tracking number
-                    Headers = #{<<"content-type">> => <<"text/plain">>},
-                    ResponseBody = <<"Tracking request received.">>,
-                    Req2 = cowboy_req:reply(200, Headers, ResponseBody, Req1),
-                    {ok, Req2, State};
+
+                    % Make an RPC call to the remote tracking server
+                    RemoteNode = 'logic@143.198.146.54',
+                    case rpc:call(RemoteNode, tracking_server, get_status, [TrackingNumber]) of
+                        {ok, Status} ->
+                            %% Respond with success, displaying the package status
+                            Headers = #{<<"content-type">> => <<"text/plain">>},
+                            ResponseBody = <<"Tracking request received. Status: ">> ++ term_to_binary(Status),
+                            Req2 = cowboy_req:reply(200, Headers, ResponseBody, Req1),
+                            {ok, Req2, State};
+                        {error, Reason} ->
+                            io:format("Error fetching package status from remote node: ~p~n", [Reason]),
+                            Headers = #{<<"content-type">> => <<"text/plain">>},
+                            Req2 = cowboy_req:reply(500, Headers, <<"Failed to retrieve package status">>, Req1),
+                            {ok, Req2, State}
+                    end;
 
                 {error, Reason} ->
                     io:format("Error extracting tracking number: ~p~n", [Reason]),
