@@ -20,8 +20,10 @@ start(_StartType, _StartArgs) ->
     {'_', [
         {"/", toppage_h, []},
         {"/package", register_h, []},
+        {"/change", update_h, []},
         {"/status", tracking_form, []},
-        {"/registered", register_form, []}
+        {"/registered", register_form, []},
+        {"/update", update_form, []}
     ]}
     ]),
     
