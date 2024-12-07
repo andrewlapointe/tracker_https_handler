@@ -15,9 +15,10 @@ init(Req0, State) ->
             {ok, Req1, State};
         _ ->
             %% For methods other than POST
+            Headers = #{<<"content-type">> => <<"text/plain">>},
             Req1 = cowboy_req:reply(
                 405,
-                [{<<"content-type">>, <<"text/plain">>}],
+                Headers,
                 <<"Method Not Allowed">>,
                 Req0
             ),
