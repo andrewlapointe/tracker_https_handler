@@ -21,7 +21,7 @@ init(Req0, State) ->
                         {ok, Status} ->
                             %% Respond with success, displaying the package status
                             Headers = #{<<"content-type">> => <<"text/plain">>},
-                            ResponseBody = <<"Tracking request received. Status: ">> ++ binary_to_term(Status),
+                            ResponseBody = "Tracking request received. Status: " ++ Status,
                             Req2 = cowboy_req:reply(200, Headers, ResponseBody, Req1),
                             {ok, Req2, State};
                         {error, Reason} ->
