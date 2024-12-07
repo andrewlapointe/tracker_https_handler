@@ -15,9 +15,9 @@ init(Req0, State) ->
                 {ok, TrackingNumber} ->
                     io:format("Extracted tracking number: ~p~n", [TrackingNumber]),
 
-                    % Make an RPC call to the remote tracking server
-                    RemoteNode = 'logic@143.198.146.54',
-                    case rpc:call(RemoteNode, tracking_server, get_status, [TrackingNumber]) of
+                    %% Make a direct call to the remote gen_server
+                    RemoteName = {tracking_server, 'logic@198.199.88.218'},
+                    case gen_server:call(RemoteName, {get_status, TrackingNumber}) of
                         {ok, Status} ->
                             %% Respond with success, displaying the package status
                             Headers = #{<<"content-type">> => <<"text/plain">>},
@@ -25,7 +25,7 @@ init(Req0, State) ->
                             Req2 = cowboy_req:reply(200, Headers, ResponseBody, Req1),
                             {ok, Req2, State};
                         {error, Reason} ->
-                            io:format("Error fetching package status from remote node: ~p~n", [Reason]),
+                            io:format("Error fetching package status from remote server: ~p~n", [Reason]),
                             Headers = #{<<"content-type">> => <<"text/plain">>},
                             Req2 = cowboy_req:reply(500, Headers, <<"Failed to retrieve package status">>, Req1),
                             {ok, Req2, State}
@@ -34,14 +34,14 @@ init(Req0, State) ->
                 {error, Reason} ->
                     io:format("Error extracting tracking number: ~p~n", [Reason]),
                     
-                    % Respond with error
+                    %% Respond with error
                     Headers = #{<<"content-type">> => <<"text/plain">>},
                     Req2 = cowboy_req:reply(400, Headers, <<"Invalid Tracking Data">>, Req1),
                     {ok, Req2, State}
             end;
 
         _ ->
-            % For methods other than POST
+            %% For methods other than POST
             Req1 = cowboy_req:reply(
                 405,
                 #{<<"content-type">> => <<"text/plain">>},
