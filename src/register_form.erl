@@ -21,8 +21,8 @@ init(Req0, State) ->
                         {ok, Status} ->
                             %% Respond with success, displaying the package status
                             Headers = #{<<"content-type">> => <<"text/plain">>},
-                            io:format(Status),
-                            ResponseBody = "Tracking request received. Status: " ++ Status,
+                            MapString = lists:flatten(io_lib:format("~p", [Status])),
+                            ResponseBody = "Tracking request received. Status: " ++ MapString,
                             Req2 = cowboy_req:reply(200, Headers, ResponseBody, Req1),
                             {ok, Req2, State};
                         {error, Reason} ->
