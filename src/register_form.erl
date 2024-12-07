@@ -6,15 +6,36 @@ init(Req0, State) ->
     io:format("Received ~s request~n", [Method]),
     case Method of
         <<"POST">> ->
-            {ok, Data, _Body} = cowboy_req:read_body(Req0),
-            %% Log the received data for debugging
-            io:format("Received data: ~p~n", [Data]),
-            Headers = #{<<"content-type">> => <<"text/binary">>},
-            ReplyBody = <<"Package registered successfully!">>,
-            Req1 = cowboy_req:reply(200, Headers, ReplyBody, Req0),
-            {ok, Req1, State};
+            %% Read the binary body of the request
+            case cowboy_req:read_body(Req0) of
+                {ok, BinaryData, _} ->
+                    %% Call the gen_server with the binary data
+                    case gen_server:call(register_server, {register, BinaryData}) of
+                        {ok, "Package registered", PackageKey} ->
+                            io:format("Package registered with ID: ~s~n", [PackageKey]),
+                            %% Respond with a success message and the package ID
+                            Headers = #{<<"content-type">> => <<"text/binary">>},
+                            ReplyBody = <<"Package registered successfully! Package ID: ">> ++ PackageKey,
+                            Req1 = cowboy_req:reply(200, Headers, ReplyBody, Req0),
+                            {ok, Req1, State};
+                        {error, Reason} ->
+                            %% Handle registration errors
+                            io:format("Failed to register package: ~p~n", [Reason]),
+                            Headers = #{<<"content-type">> => <<"text/plain">>},
+                            ReplyBody = <<"Failed to register package. Reason: ">> ++ atom_to_binary(Reason, utf8),
+                            Req1 = cowboy_req:reply(500, Headers, ReplyBody, Req0),
+                            {ok, Req1, State}
+                    end;
+                {error, Reason} ->
+                    %% Handle errors in reading the body
+                    io:format("Error reading body: ~p~n", [Reason]),
+                    Headers = #{<<"content-type">> => <<"text/plain">>},
+                    ReplyBody = <<"Unable to process request. Reason: ">> ++ atom_to_binary(Reason, utf8),
+                    Req1 = cowboy_req:reply(400, Headers, ReplyBody, Req0),
+                    {ok, Req1, State}
+            end;
         _ ->
-            %% For methods other than POST
+            %% Handle unsupported HTTP methods
             Headers = #{<<"content-type">> => <<"text/plain">>},
             Req1 = cowboy_req:reply(
                 405,
