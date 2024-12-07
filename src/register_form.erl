@@ -10,7 +10,7 @@ init(Req0, State) ->
             case cowboy_req:read_body(Req0) of
                 {ok, BinaryData, _} ->
                     %% Call the gen_server with the binary data
-                    case gen_server:call({registration_server, 'logic@146.190.145.34'}, {register, BinaryData}) of
+                    case gen_server:call({registration_server, 'logic@146.190.145.34'}, {register_package, BinaryData}) of
                         {ok, "Package registered", PackageKey} ->
                             io:format("Package registered with ID: ~s~n", [PackageKey]),
                             %% Respond with a success message and the package ID
