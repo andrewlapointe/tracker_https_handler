@@ -62,9 +62,9 @@ init(Req0, State) ->
 
 parse_package_id(BinaryData) ->
     try
-        %% Convert binary to string for processing
+        %% Convert binary data to string
         StringData = binary_to_list(BinaryData),
-        %% Replace '+' with space
+        %% Replace '+' with spaces
         NormalizedData = lists:map(fun(Char) -> if Char =:= $+ -> $\s; true -> Char end end, StringData),
         %% Split by '&' into key-value pairs
         Pairs = string:tokens(NormalizedData, "&"),
@@ -81,14 +81,12 @@ parse_package_id(BinaryData) ->
             {error, invalid_data}
     end.
 
-%% Helper function to parse a single key-value pair into a map
+%% Helper function to parse key-value pairs
 parse_pair(Pair, Acc) ->
     case string:tokens(Pair, "=") of
         [Key, Value] ->
-            DecodedKey = binary:copy(Key),
-            DecodedValue = binary:copy(Value),
+            DecodedKey = binary:copy(list_to_binary(Key)),
+            DecodedValue = binary:copy(list_to_binary(Value)),
             maps:put(DecodedKey, DecodedValue, Acc);
-        _ -> 
-            io:format("Skipping invalid pair: ~p~n", [Pair]),
-            Acc
+        _ -> Acc
     end.
