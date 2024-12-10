@@ -10,8 +10,8 @@ init(Req0, State) ->
             case cowboy_req:read_body(Req0) of
                 {ok, BinaryData, _} ->
                     ServerIP = case os:getenv("LOGIC_SERVER_IP") of
-                                IP -> IP
-                            end,
+                        IP -> IP
+                    end,
                     Server = {registration_server, list_to_atom("logic@" ++ ServerIP)},
                     %% Call the gen_server with the binary data
                     case gen_server:call(Server, {register_package, BinaryData}) of
