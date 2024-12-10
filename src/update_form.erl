@@ -60,7 +60,6 @@ init(Req0, State) ->
             {ok, Req1, State}
     end.
 
-%% Function to extract package_id from the body
 parse_package_id(BinaryData) ->
     try
         %% Convert binary to string for processing
@@ -69,20 +68,27 @@ parse_package_id(BinaryData) ->
         NormalizedData = lists:map(fun(Char) -> if Char =:= $+ -> $\s; true -> Char end end, StringData),
         %% Split by '&' into key-value pairs
         Pairs = string:tokens(NormalizedData, "&"),
-        %% Convert key-value pairs into a map
+        %% Parse key-value pairs into a map
         ParsedMap = lists:foldl(fun parse_pair/2, #{}, Pairs),
-        %% Find the package_id key
-        case maps:get("package_id", ParsedMap, undefined) of
+        %% Extract the package_id key
+        case maps:get(<<"package_id">>, ParsedMap, undefined) of
             undefined -> {error, missing_package_id};
-            PackageId -> {ok, binary:copy(PackageId)}
+            PackageId -> {ok, PackageId}
         end
     catch
-        _:Error -> {error, invalid_data}
+        _:Error -> 
+            io:format("Error during parsing: ~p~n", [Error]),
+            {error, invalid_data}
     end.
 
 %% Helper function to parse a single key-value pair into a map
 parse_pair(Pair, Acc) ->
     case string:tokens(Pair, "=") of
-        [Key, Value] -> maps:put(Key, Value, Acc);
-        _ -> Acc
+        [Key, Value] ->
+            DecodedKey = binary:copy(Key),
+            DecodedValue = binary:copy(Value),
+            maps:put(DecodedKey, DecodedValue, Acc);
+        _ -> 
+            io:format("Skipping invalid pair: ~p~n", [Pair]),
+            Acc
     end.
