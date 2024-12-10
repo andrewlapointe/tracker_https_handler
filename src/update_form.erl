@@ -9,12 +9,12 @@ init(Req0, State) ->
             %% Read the binary body of the request
             case cowboy_req:read_body(Req0) of
                 {ok, BinaryData, _} ->
-                    %% Extract package ID from the binary data
                     io:format("Received raw data: ~p~n", [BinaryData]),
-                    case cowboy_req:parse_qs(Req0) of
-                        {ok, #{<<"package_id">> := PackageId}} ->
+                    %% Extract the package_id from the body
+                    case parse_package_id(BinaryData) of
+                        {ok, PackageId} ->
                             %% Call the gen_server with the package ID and raw binary data
-                            case gen_server:call({package_monitor_server, 'logic@146.190.145.34'}, {update_package, PackageId, BinaryData}) of
+                            case gen_server:cast({package_monitor_server, 'logic@146.190.145.34'}, {update_package, PackageId, BinaryData}) of
                                 ok ->
                                     io:format("Package update initiated for ID: ~s~n", [binary_to_list(PackageId)]),
                                     %% Respond with a success message
@@ -31,11 +31,11 @@ init(Req0, State) ->
                                     Req1 = cowboy_req:reply(500, Headers, ReplyBody, Req0),
                                     {ok, Req1, State}
                             end;
-                        _ ->
-                            %% Handle missing package ID in query parameters
-                            io:format("Package ID missing from request~n"),
+                        {error, Reason} ->
+                            %% Handle missing or invalid package ID
+                            io:format("Failed to extract package ID: ~p~n", [Reason]),
                             Headers = #{<<"content-type">> => <<"text/plain">>},
-                            ReplyBody = <<"Package ID is required for update.">>,
+                            ReplyBody = <<"Package ID is missing or invalid.">>,
                             Req1 = cowboy_req:reply(400, Headers, ReplyBody, Req0),
                             {ok, Req1, State}
                     end;
@@ -58,4 +58,22 @@ init(Req0, State) ->
                 Req0
             ),
             {ok, Req1, State}
+    end.
+
+%% Function to extract package_id from the body
+parse_package_id(BinaryData) ->
+    try
+        %% Convert binary to string for processing
+        StringData = binary_to_list(BinaryData),
+        %% Replace '+' with space
+        NormalizedData = lists:map(fun(Char) -> if Char =:= $+ -> $\s; true -> Char end end, StringData),
+        %% Split by '&' into key-value pairs
+        Pairs = string:tokens(NormalizedData, "&"),
+        %% Find the package_id key-value pair
+        case lists:keyfind("package_id", 1, [string:tokens(Pair, "=") || Pair <- Pairs]) of
+            false -> {error, missing_package_id};
+            ["package_id", PackageId] -> {ok, binary:copy(PackageId)}
+        end
+    catch
+        _:Error -> {error, invalid_data}
     end.
