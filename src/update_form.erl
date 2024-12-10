@@ -9,7 +9,7 @@ init(Req0, State) ->
             {ok, BinaryData, _Body} = cowboy_req:read_body(Req0),
             io:format("Received data: ~p~n", [BinaryData]),
             %% Parse the received data
-            case parse_update_data(BinaryData) of
+            case parse_package_data(BinaryData) of
                 {ok, #{<<"package_id">> := PackageId} = ParsedData} ->
                     %% Validate the package ID
                     io:format("Updating package with ID: ~s~n", [PackageId]),
@@ -41,41 +41,37 @@ init(Req0, State) ->
             {ok, Req1, State}
     end.
 
-%% Function to parse incoming binary data
-parse_update_data(BinaryData) ->
+parse_package_data(BinaryData) ->
     try
         %% Convert binary to string
         StringData = binary_to_list(BinaryData),
         %% Replace '+' with space
         NormalizedData = lists:map(fun(Char) -> if Char =:= $+ -> $\s; true -> Char end end, StringData),
-        %% Split into key-value pairs
+        %% Split by '&' into key-value pairs
         Pairs = string:tokens(NormalizedData, "&"),
-        %% Parse into a map
+        %% Parse each key-value pair into a map
         ParsedData = lists:foldl(fun parse_pair/2, #{}, Pairs),
-        %% Check if package_id is present and valid
-        case maps:get(<<"package_id">>, ParsedData, undefined) of
-            undefined ->
-                io:format("Missing package_id in data: ~p~n", [Pairs]),
-                {error, missing_package_id};
-            <<>> ->
-                io:format("Empty package_id in data: ~p~n", [Pairs]),
-                {error, empty_package_id};
-            _ ->
-                {ok, ParsedData}
-        end
+        {ok, ParsedData}
     catch
-        Class:Reason ->
-            io:format("Failed to parse data. Class: ~p, Reason: ~p~n", [Class, Reason]),
+        _:Error ->
+            io:format("Failed to parse data.~n"),
             {error, invalid_data}
     end.
 
 parse_pair(Pair, Acc) ->
     case string:tokens(Pair, "=") of
         [Key, Value] ->
-            %% Normalize key to lowercase and add to the map, allowing empty values
-            NormalizedKey = binary:copy(string:to_lower(Key)),
-            maps:put(NormalizedKey, binary:copy(Value), Acc);
+            DecodedKey = decode_url(Key),
+            DecodedValue = decode_url(Value),
+            maps:put(DecodedKey, DecodedValue, Acc);
         _ ->
-            io:format("Ignoring invalid pair: ~p~n", [Pair]),
+            io:format("Skipping invalid pair: ~p~n", [Pair]),
             Acc
+    end.
+
+decode_url(Value) ->
+    try
+        lists:map(fun(Char) -> if Char =:= $+ -> $\s; true -> Char end end, Value)
+    catch
+        _:Error -> Value
     end.
