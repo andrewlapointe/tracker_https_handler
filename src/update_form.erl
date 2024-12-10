@@ -12,7 +12,7 @@ init(Req0, State) ->
             case parse_package_data(BinaryData) of
                 {ok, #{<<"package_id">> := PackageId} = ParsedData} ->
                     %% Validate the package ID
-                    io:format("Updating package with ID: ~s~n", [PackageId]),
+                    io:format("Updating package with ID: ~s~n", [binary_to_list(PackageId)]),
                     %% Call the gen_server with the parsed data
                     package_monitor_server:update_db_record(PackageId, ParsedData),
                     %% Respond with success
@@ -25,7 +25,7 @@ init(Req0, State) ->
                     io:format("Failed to parse or validate data: ~p~n", [Reason]),
                     Headers = #{<<"content-type">> => <<"text/plain">>},
                     ReasonBinary = atom_to_binary(Reason, utf8),
-                    ReplyBody = <<"Failed to process request. Reason: ", ReasonBinary/binary>>,
+                    ReplyBody = <<"Failed to register package. Reason: ", ReasonBinary/binary>>,
                     Req1 = cowboy_req:reply(400, Headers, ReplyBody, Req0),
                     {ok, Req1, State}
             end;
@@ -41,9 +41,10 @@ init(Req0, State) ->
             {ok, Req1, State}
     end.
 
+%% Parse the received data into a map with binary keys and values
 parse_package_data(BinaryData) ->
     try
-        %% Convert binary to string
+        %% Convert binary to string for processing
         StringData = binary_to_list(BinaryData),
         %% Replace '+' with space
         NormalizedData = lists:map(fun(Char) -> if Char =:= $+ -> $\s; true -> Char end end, StringData),
@@ -58,20 +59,22 @@ parse_package_data(BinaryData) ->
             {error, invalid_data}
     end.
 
+%% Parse a single key-value pair and add it to the map
 parse_pair(Pair, Acc) ->
     case string:tokens(Pair, "=") of
         [Key, Value] ->
-            DecodedKey = decode_url(Key),
-            DecodedValue = decode_url(Value),
+            DecodedKey = binary:copy(decode_url(Key)),
+            DecodedValue = binary:copy(decode_url(Value)),
             maps:put(DecodedKey, DecodedValue, Acc);
         _ ->
             io:format("Skipping invalid pair: ~p~n", [Pair]),
             Acc
     end.
 
+%% Decode URL-encoded values (handles '+' and percent-encoding)
 decode_url(Value) ->
     try
-        lists:map(fun(Char) -> if Char =:= $+ -> $\s; true -> Char end end, Value)
+        uri_string:decode(Value)
     catch
-        _:Error -> Value
+        _:Error -> binary:copy(Value) % Ensure binary output in case of failure
     end.
