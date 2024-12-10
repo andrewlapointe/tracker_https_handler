@@ -9,12 +9,9 @@ init(Req0, State) ->
             %% Read the binary body of the request
             case cowboy_req:read_body(Req0) of
                 {ok, BinaryData, _} ->
-                    ServerIP = case os:getenv("LOGIC_SERVER_IP") of
-                        IP -> IP
-                    end,
-                    Server = {registration_server, list_to_atom("logic@" ++ ServerIP)},
+                    
                     %% Call the gen_server with the binary data
-                    case gen_server:call(Server, {register_package, BinaryData}) of
+                    case gen_server:call({registration_server, 'logic@146.190.145.34'}, {register_package, BinaryData}) of
                         {ok, "Package registered", PackageKey} ->
                             io:format("Package registered with ID: ~s~n", [PackageKey]),
                             %% Respond with a success message and the package ID
