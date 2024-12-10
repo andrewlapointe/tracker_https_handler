@@ -50,21 +50,32 @@ parse_update_data(BinaryData) ->
         NormalizedData = lists:map(fun(Char) -> if Char =:= $+ -> $\s; true -> Char end end, StringData),
         %% Split into key-value pairs
         Pairs = string:tokens(NormalizedData, "&"),
-        %% Parse into a map, skipping empty values
+        %% Parse into a map
         ParsedData = lists:foldl(fun parse_pair/2, #{}, Pairs),
-        %% Check if package_id is present
-        case maps:is_key(<<"package_id">>, ParsedData) of
-            true -> {ok, ParsedData};
-            false -> {error, missing_package_id}
+        %% Check if package_id is present and valid
+        case maps:get(<<"package_id">>, ParsedData, undefined) of
+            undefined ->
+                io:format("Missing package_id in data: ~p~n", [Pairs]),
+                {error, missing_package_id};
+            <<>> ->
+                io:format("Empty package_id in data: ~p~n", [Pairs]),
+                {error, empty_package_id};
+            _ ->
+                {ok, ParsedData}
         end
     catch
-        _:_ -> {error, invalid_data}
+        Class:Reason ->
+            io:format("Failed to parse data. Class: ~p, Reason: ~p~n", [Class, Reason]),
+            {error, invalid_data}
     end.
 
 parse_pair(Pair, Acc) ->
     case string:tokens(Pair, "=") of
-        [Key, Value] when Value /= "" -> %% Only include non-empty values
-            maps:put(binary:copy(Key), binary:copy(Value), Acc);
+        [Key, Value] ->
+            %% Normalize key to lowercase and add to the map, allowing empty values
+            NormalizedKey = binary:copy(string:to_lower(Key)),
+            maps:put(NormalizedKey, binary:copy(Value), Acc);
         _ ->
+            io:format("Ignoring invalid pair: ~p~n", [Pair]),
             Acc
     end.
