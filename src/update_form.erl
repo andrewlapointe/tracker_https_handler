@@ -13,8 +13,12 @@ init(Req0, State) ->
                     %% Extract the package_id from the body
                     case parse_package_id(BinaryData) of
                         {ok, PackageId} ->
+                            ServerIP = case os:getenv("LOGIC_SERVER_IP") of
+                                IP -> IP
+                            end,
+                            Server = {package_monitor_server, list_to_atom("logic@" ++ ServerIP)},
                             %% Call the gen_server with the package ID and raw binary data
-                            case gen_server:cast({package_monitor_server, 'logic@146.190.145.34'}, {update_package, PackageId, BinaryData}) of
+                            case gen_server:cast(Server, {update_package, PackageId, BinaryData}) of
                                 ok ->
                                     io:format("Package update initiated for ID: ~s~n", [binary_to_list(PackageId)]),
                                     %% Respond with a success message
