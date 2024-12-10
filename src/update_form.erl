@@ -44,7 +44,7 @@ init(Req0, State) ->
                     io:format("Error reading body: ~p~n", [Reason]),
                     Headers = #{<<"content-type">> => <<"text/plain">>},
                     ReasonBinary = atom_to_binary(Reason, utf8),
-                    ReplyBody = <<"Unable to process request. Reason: ", ReasonBinary/binary>>>,
+                    ReplyBody = <<"Unable to process request. Reason: ", ReasonBinary/binary>>,
                     Req1 = cowboy_req:reply(400, Headers, ReplyBody, Req0),
                     {ok, Req1, State}
             end;
