@@ -27,7 +27,7 @@ init(Req0, State) ->
                                     io:format("Failed to update package: ~p~n", [Reason]),
                                     Headers = #{<<"content-type">> => <<"text/plain">>},
                                     ReasonBinary = atom_to_binary(Reason, utf8),
-                                    ReplyBody = <<"Failed to update package. Reason: ", ReasonBinary/binary>>>,
+                                    ReplyBody = <<"Failed to update package. Reason: ", ReasonBinary/binary>>,
                                     Req1 = cowboy_req:reply(500, Headers, ReplyBody, Req0),
                                     {ok, Req1, State}
                             end;
